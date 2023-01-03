@@ -19,6 +19,20 @@ def get_filtered_df(path, name, special_vals=None, nchunk=None, category=None):
     return df
 
 
+def get_df_by_category(paths, name, category, nrep=None):
+    df_res = pd.DataFrame()
+    for i in range(len(paths)):
+        df = get_filtered_df(paths[i], name, category=category)
+        df_res = pd.concat([df_res, df], axis=0)
+    df_res.rename(columns={'cratio': 'cratio' + category, 'speed': 'speed' + category,
+                           'special_vals': 'special_vals' + category},
+                  inplace=True)
+    df_res = df_res.drop(['nchunk', 'category', 'codec_filter', 'categoria'], axis=1)
+    df_res = df_res.reset_index(drop=True)
+
+    return df_res
+
+
 def delete_special_vals(df, col_names: list):
     for var in col_names:
         df = df[getattr(df, var).isin([0])]
